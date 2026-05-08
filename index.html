@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quan em toca renovar? | Serveis Mèdics Penedès</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary-color:  #588087;
+      --primary-dark:   #446468;
+      --primary-light:  #f0f4f4;
+      --primary-border: rgba(88,128,135,.25);
+      --border-color:   #e2e8f0;
+      --text-main:      #334155;
+      --text-gray:      #64748b;
+      --color-white:    #fff;
+      --success-bg:     #dcfce7;
+      --success-text:   #166534;
+      --success-border: #4ade80;
+      --warning-bg:     #fef9c3;
+      --warning-text:   #854d0e;
+      --warning-border: #facc15;
+      --error-bg:       #fee2e2;
+      --error-text:     #991b1b;
+      --error-border:   #f87171;
+      --orange-bg:      #ffedd5;
+      --orange-text:    #9a3412;
+      --orange-border:  #fb923c;
+      --radius-card:    14px;
+      --shadow-card:    0 2px 12px rgba(0,0,0,.08);
+      --transition:     .18s ease;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-main);
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      width: 100%;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 20px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-logo img { height: 32px; width: auto; display: block; }
+    .topbar-langs { display: flex; gap: 6px; }
+    .lang-btn {
+      padding: 4px 9px; font-size: 11px; font-weight: 600;
+      border-radius: 4px; border: 1px solid transparent;
+      background: transparent; cursor: pointer;
+      color: var(--text-gray); letter-spacing: .03em;
+      transition: background var(--transition), color var(--transition);
+    }
+    .lang-btn:hover { background: var(--primary-light); color: var(--primary-color); }
+    .lang-btn.active {
+      background: var(--primary-light); color: var(--primary-color);
+      border-color: var(--primary-border); font-weight: 700;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      flex: 1; display: flex; align-items: flex-start; justify-content: center;
+      padding: 32px 16px 48px; width: 100%;
+    }
+
+    .card {
+      background: var(--color-white);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-card);
+      max-width: 520px; width: 100%;
+      overflow: hidden;
+    }
+
+    /* ── CARD HEADER ── */
+    .card-header {
+      background: var(--primary-color);
+      color: var(--color-white);
+      padding: 28px 32px 24px;
+      text-align: center;
+    }
+    .card-header .header-icon { font-size: 36px; margin-bottom: 10px; }
+    .card-header h1 { font-size: 1.4rem; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+    .card-header p  { font-size: .92rem; opacity: .88; }
+
+    /* ── CARD BODY ── */
+    .card-body { padding: 28px 32px 32px; }
+
+    /* ── STEPS INDICATOR ── */
+    .steps {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 28px;
+    }
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .78rem; font-weight: 700;
+      border: 2px solid var(--border-color);
+      color: var(--text-gray); background: var(--color-white);
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+      flex-shrink: 0;
+    }
+    .step-dot.active { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+    .step-dot.done   { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+    .step-line {
+      flex: 1; height: 2px; background: var(--border-color); max-width: 60px;
+      transition: background var(--transition);
+    }
+    .step-line.done { background: var(--success-border); }
+
+    /* ── FORM ── */
+    .field { margin-bottom: 18px; }
+    label {
+      display: block; font-size: .82rem; font-weight: 700;
+      margin-bottom: 6px; color: var(--text-main); letter-spacing: .025em;
+    }
+    .input-field, select.input-field {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border-color); border-radius: 8px;
+      font-family: Arial, sans-serif; font-size: 1rem;
+      color: var(--text-main); outline: none; background: var(--color-white);
+      transition: border-color var(--transition);
+      appearance: none; -webkit-appearance: none;
+    }
+    select.input-field {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 36px;
+    }
+    .input-field:focus, select.input-field:focus { border-color: var(--primary-color); }
+    .input-field.error { border-color: var(--error-border); }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── CHECKBOX ── */
+    .checkbox-field {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px; border-radius: 8px;
+      border: 1.5px solid var(--border-color);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .checkbox-field:hover { border-color: var(--primary-color); background: var(--primary-light); }
+    .checkbox-field.checked { border-color: var(--primary-color); background: var(--primary-light); }
+    .checkbox-field input[type="checkbox"] { display: none; }
+    .checkbox-box {
+      width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+      border: 2px solid var(--border-color); background: var(--color-white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; margin-top: 1px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .checkbox-field.checked .checkbox-box {
+      background: var(--primary-color); border-color: var(--primary-color); color: #fff;
+    }
+    .checkbox-label { font-size: .88rem; color: var(--text-main); line-height: 1.4; }
+    .checkbox-label small { display: block; color: var(--text-gray); font-size: .78rem; margin-top: 2px; }
+
+    /* ── CONTACT ROW ── */
+    .contact-toggle {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      border: 1.5px solid var(--border-color); border-radius: 8px; overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .contact-opt {
+      padding: 10px; text-align: center; cursor: pointer;
+      font-size: .85rem; font-weight: 600; color: var(--text-gray);
+      background: var(--color-white);
+      transition: background var(--transition), color var(--transition);
+      border: none; font-family: Arial, sans-serif;
+    }
+    .contact-opt:first-child { border-right: 1px solid var(--border-color); }
+    .contact-opt.active { background: var(--primary-color); color: #fff; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 15px 20px; width: 100%;
+      border: none; border-radius: 8px;
+      font-family: Arial, sans-serif; font-size: 1rem; font-weight: 600;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+    }
+    .btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 16px rgba(0,0,0,.12); }
+    .btn:active { transform: translateY(0); filter: brightness(.95); box-shadow: none; }
+    .btn-primary { background: var(--primary-color); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline {
+      background: var(--color-white); color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+    .btn-outline:hover { background: var(--primary-light); }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+    .btn-row .btn { flex: 1; }
+
+    /* ── RESULT CARD ── */
+    #screen-result { display: none; }
+
+    .result-banner {
+      border-radius: 10px; padding: 20px;
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 22px; border: 1.5px solid;
+    }
+    .result-banner .r-icon { font-size: 28px; flex-shrink: 0; margin-top: 1px; }
+    .result-banner .r-text h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .result-banner .r-text p  { font-size: .9rem; line-height: 1.5; }
+    .result-banner.urgent  { background: var(--error-bg);   border-color: var(--error-border);   color: var(--error-text); }
+    .result-banner.soon    { background: var(--orange-bg);  border-color: var(--orange-border);  color: var(--orange-text); }
+    .result-banner.planned { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
+    .result-banner.ok      { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+
+    .result-details {
+      background: var(--primary-light); border-radius: 10px;
+      padding: 16px 18px; margin-bottom: 22px;
+    }
+    .result-detail-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 6px 0; border-bottom: 1px solid var(--border-color);
+      font-size: .88rem;
+    }
+    .result-detail-row:last-child { border-bottom: none; }
+    .result-detail-row .r-label { color: var(--text-gray); }
+    .result-detail-row .r-value { font-weight: 700; color: var(--text-main); }
+
+    .reminder-confirm {
+      background: var(--success-bg); border: 1.5px solid var(--success-border);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: .88rem; color: var(--success-text); font-weight: 600;
+      margin-bottom: 22px;
+    }
+
+    /* ── ERROR MSG ── */
+    .field-error {
+      font-size: .78rem; color: var(--error-text);
+      margin-top: 4px; display: none;
+    }
+    .field-error.show { display: block; }
+
+    @media (max-width: 500px) {
+      .card-header { padding: 22px 20px 18px; }
+      .card-body   { padding: 22px 20px 24px; }
+      .field-row   { grid-template-columns: 1fr; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <img src="logo-smp.png" alt="Serveis Mèdics Penedès" />
+  </div>
+  <div class="topbar-langs">
+    <button class="lang-btn active" data-lang="ca" onclick="setLang('ca')">CA</button>
+    <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">FR</button>
+  </div>
+</div>
+
+<div class="page">
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+      <div class="header-icon">📋</div>
+      <h1 data-t="page_title"></h1>
+      <p data-t="page_subtitle"></p>
+    </div>
+
+    <div class="card-body">
+
+      <!-- STEPS -->
+      <div class="steps">
+        <div class="step-dot active" id="dot-1">1</div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step-dot" id="dot-2">2</div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step-dot" id="dot-3">3</div>
+      </div>
+
+      <!-- SCREEN 1: PERMÍS + DATES -->
+      <div id="screen-1">
+        <div class="field">
+          <label data-t="f_permit_type"></label>
+          <select id="permit-type" class="input-field">
+            <option value="" data-t="f_permit_type_ph"></option>
+            <option value="carnet_smp"    data-t="permit_carnet_smp"></option>
+            <option value="conduir_b"     data-t="permit_conduir_b"></option>
+            <option value="conduir_cd"    data-t="permit_conduir_cd"></option>
+            <option value="cert_laboral"  data-t="permit_cert_laboral"></option>
+            <option value="cert_esportiu" data-t="permit_cert_esportiu"></option>
+            <option value="llicencia_armes" data-t="permit_llicencia_armes"></option>
+            <option value="altre"         data-t="permit_altre"></option>
+          </select>
+          <div class="field-error" id="err-permit" data-t="err_required"></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label data-t="f_expiry"></label>
+            <input id="expiry-date" class="input-field" type="date" />
+            <div class="field-error" id="err-expiry" data-t="err_required"></div>
+          </div>
+          <div class="field">
+            <label data-t="f_age"></label>
+            <input id="user-age" class="input-field" type="number" min="14" max="100" data-t-placeholder="f_age_ph" />
+            <div class="field-error" id="err-age" data-t="err_age"></div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="goStep2()">
+            <span data-t="btn_next"></span>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: CONTACTE + RECORDATORI -->
+      <div id="screen-2" style="display:none">
+        <div class="field">
+          <label data-t="f_contact_label"></label>
+          <div class="contact-toggle">
+            <button class="contact-opt active" id="opt-phone" onclick="switchContact('phone')" data-t="f_contact_phone"></button>
+            <button class="contact-opt" id="opt-email" onclick="switchContact('email')" data-t="f_contact_email"></button>
+          </div>
+          <input id="contact-phone" class="input-field" type="tel" data-t-placeholder="f_phone_ph" style="margin-top:6px" />
+          <input id="contact-email" class="input-field" type="email" data-t-placeholder="f_email_ph" style="display:none;margin-top:6px" />
+          <div class="field-error" id="err-contact" data-t="err_contact"></div>
+        </div>
+
+        <div class="field">
+          <div class="checkbox-field" id="checkbox-reminder" onclick="toggleCheckbox()">
+            <input type="checkbox" id="accept-reminder" />
+            <div class="checkbox-box" id="checkbox-box"></div>
+            <div class="checkbox-label">
+              <span data-t="f_reminder_label"></span>
+              <small data-t="f_reminder_desc"></small>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="goStep1()">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-t="btn_back"></span>
+          </button>
+          <button class="btn btn-primary" onclick="calculate()">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-t="btn_calculate"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: RESULTAT -->
+      <div id="screen-result">
+        <div class="result-banner" id="result-banner">
+          <div class="r-icon" id="result-icon"></div>
+          <div class="r-text">
+            <h3 id="result-title"></h3>
+            <p id="result-body"></p>
+          </div>
+        </div>
+
+        <div class="result-details">
+          <div class="result-detail-row">
+            <span class="r-label" data-t="rd_permit"></span>
+            <span class="r-value" id="rd-permit-val"></span>
+          </div>
+          <div class="result-detail-row">
+            <span class="r-label" data-t="rd_expiry"></span>
+            <span class="r-value" id="rd-expiry-val"></span>
+          </div>
+          <div class="result-detail-row">
+            <span class="r-label" data-t="rd_start"></span>
+            <span class="r-value" id="rd-start-val"></span>
+          </div>
+          <div class="result-detail-row">
+            <span class="r-label" data-t="rd_days_left"></span>
+            <span class="r-value" id="rd-days-val"></span>
+          </div>
+        </div>
+
+        <div class="reminder-confirm" id="reminder-confirm" style="display:none">
+          <span style="font-size:20px">✅</span>
+          <span id="reminder-confirm-text"></span>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="reset()">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-t="btn_new"></span>
+          </button>
+          <button class="btn btn-primary" onclick="goToLanding()">
+            <span data-t="btn_renew_now"></span>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /card-body -->
+  </div><!-- /card -->
+</div><!-- /page -->
+
+<script>
+/* ═══════════════════════════════════════
+   DICTIONARIES
+═══════════════════════════════════════ */
+const DICT = {
+  ca: {
+    page_title:   "Quan em toca renovar?",
+    page_subtitle:"Calcula quan has de renovar el teu carnet o llicència",
+    f_permit_type:    "Tipus de permís o carnet",
+    f_permit_type_ph: "Selecciona el tipus…",
+    permit_carnet_smp:      "Carnet SMP",
+    permit_conduir_b:       "Permís de conduir (B / A)",
+    permit_conduir_cd:      "Permís de conduir professional (C / D)",
+    permit_cert_laboral:    "Certificat mèdic laboral",
+    permit_cert_esportiu:   "Certificat mèdic esportiu",
+    permit_llicencia_armes: "Llicència d'armes",
+    permit_altre:           "Altre",
+    f_expiry:     "Data de caducitat",
+    f_age:        "Edat",
+    f_age_ph:     "Ex: 45",
+    f_contact_label: "On vols rebre l'avís?",
+    f_contact_phone: "📱 Telèfon",
+    f_contact_email: "✉️ Correu",
+    f_phone_ph:   "6XX XXX XXX",
+    f_email_ph:   "nom@correu.cat",
+    f_reminder_label: "Vull rebre un recordatori",
+    f_reminder_desc:  "T'avisarem amb temps suficient per renovar sense presses",
+    btn_next:      "Continuar",
+    btn_back:      "Enrere",
+    btn_calculate: "Calcular",
+    btn_new:       "Nova consulta",
+    btn_renew_now: "Renovar ara",
+    err_required:  "Aquest camp és obligatori",
+    err_age:       "Introdueix una edat vàlida (14–100)",
+    err_contact:   "Introdueix un telèfon o correu vàlid",
+    rd_permit:     "Tipus de permís",
+    rd_expiry:     "Caducitat",
+    rd_start:      "Inici recomanat de renovació",
+    rd_days_left:  "Dies restants",
+    // result states
+    r_urgent_title:  "Renovació urgent!",
+    r_urgent_body:   "El teu {permit} caduca en {days} dies. Inicia la renovació immediatament.",
+    r_soon_title:    "Hora de renovar aviat",
+    r_soon_body:     "Et recomanem iniciar la renovació a partir del {start}. Queden {days} dies.",
+    r_planned_title: "Ho tens controlat",
+    r_planned_body:  "Et recomanem iniciar la renovació a partir del {start}. Queden {days} dies per a la caducitat.",
+    r_ok_title:      "Tens temps",
+    r_ok_body:       "El teu {permit} no caduca fins al {expiry}. T'avisarem quan s'acosti la data.",
+    r_expired_title: "Caducat!",
+    r_expired_body:  "El teu {permit} va caducar el {expiry}. Renova'l el més aviat possible.",
+    days_label:      "{n} dies",
+    reminder_set:    "T'enviarem un recordatori a {contact} a partir del {start}.",
+    no_reminder:     "Sense recordatori activat.",
+  },
+  es: {
+    page_title:   "¿Cuándo me toca renovar?",
+    page_subtitle:"Calcula cuándo debes renovar tu carnet o licencia",
+    f_permit_type:    "Tipo de permiso o carnet",
+    f_permit_type_ph: "Selecciona el tipo…",
+    permit_carnet_smp:      "Carnet SMP",
+    permit_conduir_b:       "Permiso de conducir (B / A)",
+    permit_conduir_cd:      "Permiso de conducir profesional (C / D)",
+    permit_cert_laboral:    "Certificado médico laboral",
+    permit_cert_esportiu:   "Certificado médico deportivo",
+    permit_llicencia_armes: "Licencia de armas",
+    permit_altre:           "Otro",
+    f_expiry:     "Fecha de caducidad",
+    f_age:        "Edad",
+    f_age_ph:     "Ej: 45",
+    f_contact_label: "¿Dónde quieres recibir el aviso?",
+    f_contact_phone: "📱 Teléfono",
+    f_contact_email: "✉️ Correo",
+    f_phone_ph:   "6XX XXX XXX",
+    f_email_ph:   "nombre@correo.es",
+    f_reminder_label: "Quiero recibir un recordatorio",
+    f_reminder_desc:  "Te avisaremos con tiempo suficiente para renovar sin prisas",
+    btn_next:      "Continuar",
+    btn_back:      "Atrás",
+    btn_calculate: "Calcular",
+    btn_new:       "Nueva consulta",
+    btn_renew_now: "Renovar ahora",
+    err_required:  "Este campo es obligatorio",
+    err_age:       "Introduce una edad válida (14–100)",
+    err_contact:   "Introduce un teléfono o correo válido",
+    rd_permit:     "Tipo de permiso",
+    rd_expiry:     "Caducidad",
+    rd_start:      "Inicio recomendado de renovación",
+    rd_days_left:  "Días restantes",
+    r_urgent_title:  "¡Renovación urgente!",
+    r_urgent_body:   "Tu {permit} caduca en {days} días. Inicia la renovación inmediatamente.",
+    r_soon_title:    "Hora de renovar pronto",
+    r_soon_body:     "Te recomendamos iniciar la renovación a partir del {start}. Quedan {days} días.",
+    r_planned_title: "Lo tienes controlado",
+    r_planned_body:  "Te recomendamos iniciar la renovación a partir del {start}. Quedan {days} días para la caducidad.",
+    r_ok_title:      "Tienes tiempo",
+    r_ok_body:       "Tu {permit} no caduca hasta el {expiry}. Te avisaremos cuando se acerque la fecha.",
+    r_expired_title: "¡Caducado!",
+    r_expired_body:  "Tu {permit} caducó el {expiry}. Renuévalo lo antes posible.",
+    days_label:      "{n} días",
+    reminder_set:    "Te enviaremos un recordatorio a {contact} a partir del {start}.",
+    no_reminder:     "Sin recordatorio activado.",
+  },
+  en: {
+    page_title:   "When do I need to renew?",
+    page_subtitle:"Calculate when you need to renew your card or licence",
+    f_permit_type:    "Type of permit or card",
+    f_permit_type_ph: "Select type…",
+    permit_carnet_smp:      "SMP Membership Card",
+    permit_conduir_b:       "Driving licence (B / A)",
+    permit_conduir_cd:      "Professional driving licence (C / D)",
+    permit_cert_laboral:    "Occupational health certificate",
+    permit_cert_esportiu:   "Sports medical certificate",
+    permit_llicencia_armes: "Firearms licence",
+    permit_autre:           "Other",
+    permit_altre:           "Other",
+    f_expiry:     "Expiry date",
+    f_age:        "Age",
+    f_age_ph:     "e.g. 45",
+    f_contact_label: "Where should we send the reminder?",
+    f_contact_phone: "📱 Phone",
+    f_contact_email: "✉️ Email",
+    f_phone_ph:   "+44 XXXX XXXXXX",
+    f_email_ph:   "name@email.com",
+    f_reminder_label: "I'd like to receive a reminder",
+    f_reminder_desc:  "We'll notify you with enough time to renew without rushing",
+    btn_next:      "Continue",
+    btn_back:      "Back",
+    btn_calculate: "Calculate",
+    btn_new:       "New query",
+    btn_renew_now: "Renew now",
+    err_required:  "This field is required",
+    err_age:       "Please enter a valid age (14–100)",
+    err_contact:   "Please enter a valid phone or email",
+    rd_permit:     "Permit type",
+    rd_expiry:     "Expiry",
+    rd_start:      "Recommended renewal start",
+    rd_days_left:  "Days remaining",
+    r_urgent_title:  "Urgent renewal needed!",
+    r_urgent_body:   "Your {permit} expires in {days} days. Start the renewal process immediately.",
+    r_soon_title:    "Time to renew soon",
+    r_soon_body:     "We recommend starting the renewal from {start}. {days} days remaining.",
+    r_planned_title: "You're on track",
+    r_planned_body:  "We recommend starting the renewal from {start}. {days} days until expiry.",
+    r_ok_title:      "You have plenty of time",
+    r_ok_body:       "Your {permit} doesn't expire until {expiry}. We'll remind you when it's time.",
+    r_expired_title: "Expired!",
+    r_expired_body:  "Your {permit} expired on {expiry}. Please renew as soon as possible.",
+    days_label:      "{n} days",
+    reminder_set:    "We'll send you a reminder to {contact} from {start}.",
+    no_reminder:     "No reminder set.",
+  },
+  fr: {
+    page_title:   "Quand dois-je renouveler?",
+    page_subtitle:"Calculez quand vous devez renouveler votre carte ou licence",
+    f_permit_type:    "Type de permis ou carte",
+    f_permit_type_ph: "Sélectionnez le type…",
+    permit_carnet_smp:      "Carte SMP",
+    permit_conduir_b:       "Permis de conduire (B / A)",
+    permit_conduir_cd:      "Permis de conduire professionnel (C / D)",
+    permit_cert_laboral:    "Certificat médical du travail",
+    permit_cert_esportiu:   "Certificat médical sportif",
+    permit_llicencia_armes: "Licence d'armes",
+    permit_altre:           "Autre",
+    f_expiry:     "Date d'expiration",
+    f_age:        "Âge",
+    f_age_ph:     "Ex: 45",
+    f_contact_label: "Où recevoir le rappel?",
+    f_contact_phone: "📱 Téléphone",
+    f_contact_email: "✉️ E-mail",
+    f_phone_ph:   "06 XX XX XX XX",
+    f_email_ph:   "nom@email.fr",
+    f_reminder_label: "Je souhaite recevoir un rappel",
+    f_reminder_desc:  "Nous vous alerterons suffisamment tôt pour renouveler sans stress",
+    btn_next:      "Continuer",
+    btn_back:      "Retour",
+    btn_calculate: "Calculer",
+    btn_new:       "Nouvelle consultation",
+    btn_renew_now: "Renouveler maintenant",
+    err_required:  "Ce champ est obligatoire",
+    err_age:       "Veuillez entrer un âge valide (14–100)",
+    err_contact:   "Veuillez entrer un téléphone ou e-mail valide",
+    rd_permit:     "Type de permis",
+    rd_expiry:     "Expiration",
+    rd_start:      "Début recommandé du renouvellement",
+    rd_days_left:  "Jours restants",
+    r_urgent_title:  "Renouvellement urgent!",
+    r_urgent_body:   "Votre {permit} expire dans {days} jours. Commencez le renouvellement immédiatement.",
+    r_soon_title:    "Bientôt à renouveler",
+    r_soon_body:     "Nous vous recommandons de commencer le renouvellement à partir du {start}. Il reste {days} jours.",
+    r_planned_title: "Vous avez le temps",
+    r_planned_body:  "Nous vous recommandons de commencer à partir du {start}. Il reste {days} jours avant l'expiration.",
+    r_ok_title:      "Vous avez largement le temps",
+    r_ok_body:       "Votre {permit} n'expire pas avant le {expiry}. Nous vous rappellerons à temps.",
+    r_expired_title: "Expiré!",
+    r_expired_body:  "Votre {permit} a expiré le {expiry}. Renouvelez-le dès que possible.",
+    days_label:      "{n} jours",
+    reminder_set:    "Nous vous enverrons un rappel à {contact} à partir du {start}.",
+    no_reminder:     "Aucun rappel activé.",
+  },
+};
+
+/* ── Lead times (dies abans de caducat per iniciar renovació) ── */
+const LEAD_DAYS = {
+  carnet_smp:       30,
+  conduir_b:        60,
+  conduir_cd:       90,
+  cert_laboral:     30,
+  cert_esportiu:    30,
+  llicencia_armes:  90,
+  altre:            45,
+};
+// Extra lead for age ≥ 65
+const LEAD_DAYS_SENIOR = {
+  conduir_b:   45,
+  conduir_cd:  60,
+};
+
+/* ═══════════════════════════════════════
+   LANGUAGE ENGINE
+═══════════════════════════════════════ */
+let currentLang = 'ca';
+
+function t(key) { return DICT[currentLang][key] ?? DICT['ca'][key] ?? key; }
+
+function applyLang() {
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.getAttribute('data-t')); });
+  document.querySelectorAll('[data-t-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-t-placeholder')); });
+  document.querySelectorAll('option[data-t]').forEach(el => { el.textContent = t(el.getAttribute('data-t')); });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+}
+
+function setLang(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+  document.cookie = `LOCALE=${lang}; path=/; max-age=31536000; samesite=lax`;
+  applyLang();
+}
+
+function getInitialLang() {
+  const c = document.cookie.split(';').find(x => x.trim().startsWith('LOCALE='));
+  if (c) { const l = c.split('=')[1].trim(); if (DICT[l]) return l; }
+  const b = navigator.language?.slice(0,2);
+  return DICT[b] ? b : 'ca';
+}
+
+/* ═══════════════════════════════════════
+   STEP NAVIGATION
+═══════════════════════════════════════ */
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById(`dot-${i}`).classList.remove('active','done');
+    if (i < n)  document.getElementById(`dot-${i}`).classList.add('done'), document.getElementById(`dot-${i}`).textContent = '✓';
+    if (i === n) document.getElementById(`dot-${i}`).classList.add('active');
+    if (i > n)  document.getElementById(`dot-${i}`).textContent = i;
+    if (i < 3)  document.getElementById(`line-${i}`).classList.toggle('done', i < n);
+  });
+  document.getElementById('screen-1').style.display      = n === 1 ? '' : 'none';
+  document.getElementById('screen-2').style.display      = n === 2 ? '' : 'none';
+  document.getElementById('screen-result').style.display = n === 3 ? '' : 'none';
+}
+
+function goStep1() { setStep(1); }
+
+function goStep2() {
+  const permit = document.getElementById('permit-type').value;
+  const expiry = document.getElementById('expiry-date').value;
+  const age    = parseInt(document.getElementById('user-age').value);
+  let ok = true;
+
+  const showErr = (id, show) => {
+    document.getElementById(id).classList.toggle('show', show);
+    document.getElementById(id.replace('err-','') === 'permit' ? 'permit-type' : id.replace('err-','')+'-date' ).classList.toggle('error', show);
+  };
+
+  if (!permit) { document.getElementById('err-permit').classList.add('show'); document.getElementById('permit-type').classList.add('error'); ok = false; }
+  else          { document.getElementById('err-permit').classList.remove('show'); document.getElementById('permit-type').classList.remove('error'); }
+
+  if (!expiry) { document.getElementById('err-expiry').classList.add('show'); document.getElementById('expiry-date').classList.add('error'); ok = false; }
+  else          { document.getElementById('err-expiry').classList.remove('show'); document.getElementById('expiry-date').classList.remove('error'); }
+
+  if (!age || age < 14 || age > 100) { document.getElementById('err-age').classList.add('show'); document.getElementById('user-age').classList.add('error'); ok = false; }
+  else                                { document.getElementById('err-age').classList.remove('show'); document.getElementById('user-age').classList.remove('error'); }
+
+  if (!ok) return;
+  setStep(2);
+}
+
+/* ═══════════════════════════════════════
+   CONTACT TOGGLE
+═══════════════════════════════════════ */
+let contactMode = 'phone';
+
+function switchContact(mode) {
+  contactMode = mode;
+  document.getElementById('opt-phone').classList.toggle('active', mode === 'phone');
+  document.getElementById('opt-email').classList.toggle('active', mode === 'email');
+  document.getElementById('contact-phone').style.display = mode === 'phone' ? '' : 'none';
+  document.getElementById('contact-email').style.display = mode === 'email' ? '' : 'none';
+  document.getElementById('err-contact').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════
+   CHECKBOX
+═══════════════════════════════════════ */
+let reminderChecked = false;
+
+function toggleCheckbox() {
+  reminderChecked = !reminderChecked;
+  document.getElementById('checkbox-reminder').classList.toggle('checked', reminderChecked);
+  document.getElementById('checkbox-box').textContent = reminderChecked ? '✓' : '';
+  document.getElementById('accept-reminder').checked = reminderChecked;
+}
+
+/* ═══════════════════════════════════════
+   FORMAT DATE
+═══════════════════════════════════════ */
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString(currentLang === 'en' ? 'en-GB' : currentLang === 'fr' ? 'fr-FR' : currentLang === 'es' ? 'es-ES' : 'ca-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+function daysDiff(from, to) {
+  return Math.round((new Date(to + 'T12:00:00') - new Date(from + 'T12:00:00')) / 86400000);
+}
+
+/* ═══════════════════════════════════════
+   CALCULATE
+═══════════════════════════════════════ */
+function calculate() {
+  const contactVal = contactMode === 'phone'
+    ? document.getElementById('contact-phone').value.trim()
+    : document.getElementById('contact-email').value.trim();
+
+  if (reminderChecked && !contactVal) {
+    document.getElementById('err-contact').classList.add('show');
+    return;
+  }
+  document.getElementById('err-contact').classList.remove('show');
+
+  const permitKey  = document.getElementById('permit-type').value;
+  const expiryDate = document.getElementById('expiry-date').value;
+  const age        = parseInt(document.getElementById('user-age').value);
+  const today      = new Date().toISOString().split('T')[0];
+
+  const isSenior   = age >= 65;
+  const lead       = (isSenior && LEAD_DAYS_SENIOR[permitKey]) || LEAD_DAYS[permitKey] || 45;
+  const startDate  = addDays(expiryDate, -lead);
+  const daysLeft   = daysDiff(today, expiryDate);
+  const daysToStart= daysDiff(today, startDate);
+
+  // Permit label
+  const permitLabel = t(`permit_${permitKey}`);
+  document.getElementById('rd-permit-val').textContent = permitLabel;
+  document.getElementById('rd-expiry-val').textContent = formatDate(expiryDate);
+  document.getElementById('rd-start-val').textContent  = formatDate(startDate);
+
+  // Days remaining display
+  if (daysLeft < 0) {
+    document.getElementById('rd-days-val').textContent = t('r_expired_title').replace('!','');
+    document.getElementById('rd-days-val').style.color = 'var(--error-text)';
+  } else {
+    document.getElementById('rd-days-val').textContent = t('days_label').replace('{n}', daysLeft);
+    document.getElementById('rd-days-val').style.color = daysLeft < 30 ? 'var(--error-text)' : daysLeft < lead ? 'var(--orange-text)' : 'var(--success-text)';
+  }
+
+  // Result banner
+  const banner = document.getElementById('result-banner');
+  let state, icon, titleKey, bodyKey;
+
+  const fill = (str) => str
+    .replace('{permit}', permitLabel)
+    .replace('{days}',   daysLeft)
+    .replace('{expiry}', formatDate(expiryDate))
+    .replace('{start}',  formatDate(startDate));
+
+  if (daysLeft < 0) {
+    state = 'urgent'; icon = '🚨'; titleKey = 'r_expired_title'; bodyKey = 'r_expired_body';
+  } else if (daysLeft <= 15) {
+    state = 'urgent'; icon = '🚨'; titleKey = 'r_urgent_title'; bodyKey = 'r_urgent_body';
+  } else if (daysToStart <= 0) {
+    state = 'soon';   icon = '⚠️';  titleKey = 'r_soon_title';   bodyKey = 'r_soon_body';
+  } else if (daysLeft <= lead * 2) {
+    state = 'planned'; icon = '📅'; titleKey = 'r_planned_title'; bodyKey = 'r_planned_body';
+  } else {
+    state = 'ok';     icon = '✅';  titleKey = 'r_ok_title';     bodyKey = 'r_ok_body';
+  }
+
+  banner.className = `result-banner ${state}`;
+  document.getElementById('result-icon').textContent  = icon;
+  document.getElementById('result-title').textContent = t(titleKey);
+  document.getElementById('result-body').textContent  = fill(t(bodyKey));
+
+  // Reminder confirmation
+  const rc = document.getElementById('reminder-confirm');
+  if (reminderChecked && contactVal) {
+    rc.style.display = 'flex';
+    document.getElementById('reminder-confirm-text').textContent =
+      t('reminder_set').replace('{contact}', contactVal).replace('{start}', formatDate(startDate));
+  } else {
+    rc.style.display = 'none';
+  }
+
+  setStep(3);
+}
+
+/* ═══════════════════════════════════════
+   MISC
+═══════════════════════════════════════ */
+function reset() {
+  document.getElementById('permit-type').value = '';
+  document.getElementById('expiry-date').value = '';
+  document.getElementById('user-age').value    = '';
+  document.getElementById('contact-phone').value = '';
+  document.getElementById('contact-email').value = '';
+  reminderChecked = false;
+  document.getElementById('checkbox-reminder').classList.remove('checked');
+  document.getElementById('checkbox-box').textContent = '';
+  switchContact('phone');
+  setStep(1);
+}
+
+function goToLanding() {
+  window.location.href = '../landingCarne/index.html';
+}
+
+/* ── INIT ── */
+currentLang = getInitialLang();
+applyLang();
+setStep(1);
+</script>
+</body>
+</html>

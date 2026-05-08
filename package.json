@@ -1,0 +1,8 @@
+{
+  "name": "landing-renovacio",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx serve . -p 3001 --no-clipboard",
+    "start": "npx serve . -p 3001"
+  }
+}
