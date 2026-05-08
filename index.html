@@ -208,7 +208,7 @@
     .btn-row .btn { flex: 1; }
 
     /* ── RESULT CARD ── */
-    #screen-result { display: none; }
+    #screen-result { display: none; } /* show via style.display='block' not '' */
 
     .result-banner {
       border-radius: 10px; padding: 20px;
@@ -243,6 +243,24 @@
       font-size: .88rem; color: var(--success-text); font-weight: 600;
       margin-bottom: 22px;
     }
+
+    /* ── LOPD NOTICE ── */
+    .lopd-notice {
+      font-size: .75rem; color: var(--text-gray); line-height: 1.5;
+      margin-top: 14px; padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+    .lopd-notice a { color: var(--primary-color); text-decoration: underline; }
+
+    /* ── SUBMIT STATE ── */
+    .btn-loading { opacity: .7; pointer-events: none; cursor: not-allowed; }
+    .submit-error {
+      background: var(--error-bg); border: 1.5px solid var(--error-border);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: .85rem; color: var(--error-text);
+      margin-top: 10px; display: none;
+    }
+    .submit-error.show { display: block; }
 
     /* ── ERROR MSG ── */
     .field-error {
@@ -346,12 +364,35 @@
         </div>
 
         <div class="field">
-          <div class="checkbox-field" id="checkbox-reminder" onclick="toggleCheckbox()">
+          <div class="checkbox-field" id="checkbox-reminder" onclick="toggleCheckbox('reminder')">
             <input type="checkbox" id="accept-reminder" />
-            <div class="checkbox-box" id="checkbox-box"></div>
+            <div class="checkbox-box" id="checkbox-box-reminder"></div>
             <div class="checkbox-label">
               <span data-t="f_reminder_label"></span>
               <small data-t="f_reminder_desc"></small>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="checkbox-field" id="checkbox-privacy" onclick="toggleCheckbox('privacy')">
+            <input type="checkbox" id="accept-privacy" />
+            <div class="checkbox-box" id="checkbox-box-privacy"></div>
+            <div class="checkbox-label">
+              <span data-t="f_privacy_label"></span>
+              <small><a id="privacy-link" href="#" onclick="event.stopPropagation()" data-t="f_privacy_link" target="_blank"></a></small>
+            </div>
+          </div>
+          <div class="field-error" id="err-privacy" data-t="err_privacy"></div>
+        </div>
+
+        <div class="field">
+          <div class="checkbox-field" id="checkbox-marketing" onclick="toggleCheckbox('marketing')">
+            <input type="checkbox" id="accept-marketing" />
+            <div class="checkbox-box" id="checkbox-box-marketing"></div>
+            <div class="checkbox-label">
+              <span data-t="f_marketing_label"></span>
+              <small data-t="f_marketing_desc"></small>
             </div>
           </div>
         </div>
@@ -361,11 +402,13 @@
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span data-t="btn_back"></span>
           </button>
-          <button class="btn btn-primary" onclick="calculate()">
+          <button class="btn btn-primary" id="btn-calculate" onclick="calculate()">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span data-t="btn_calculate"></span>
           </button>
         </div>
+        <div class="submit-error" id="submit-error" data-t="err_submit"></div>
+        <p class="lopd-notice" data-t="lopd_notice"></p>
       </div>
 
       <!-- SCREEN 3: RESULTAT -->
@@ -419,6 +462,9 @@
 </div><!-- /page -->
 
 <script>
+/* ── Substitueix per el teu endpoint de Formspree: https://formspree.io/f/XXXXXXXX ── */
+const FORM_ENDPOINT = 'https://formspree.io/f/XXXXXXXX';
+
 /* ═══════════════════════════════════════
    DICTIONARIES
 ═══════════════════════════════════════ */
@@ -471,6 +517,15 @@ const DICT = {
     days_label:      "{n} dies",
     reminder_set:    "T'enviarem un recordatori a {contact} a partir del {start}.",
     no_reminder:     "Sense recordatori activat.",
+    f_privacy_label: "He llegit i accepto la política de privacitat *",
+    f_privacy_link:  "Llegir política de privacitat",
+    f_marketing_label:"Accepto rebre comunicacions de Serveis Mèdics Penedès",
+    f_marketing_desc: "Pots revocar aquest consentiment en qualsevol moment",
+    err_privacy:     "Has d'acceptar la política de privacitat per continuar",
+    err_submit:      "Error en enviar les dades. Torna-ho a intentar.",
+    err_contact:     "Introdueix un telèfon o correu vàlid",
+    lopd_notice:     "Les teves dades seran tractades per Serveis Mèdics Penedès per gestionar la teva sol·licitud de recordatori, d'acord amb el RGPD i la LOPDGDD. No les cedim a tercers. Pots exercir els teus drets a info@smp.cat.",
+    btn_sending:     "Enviant…",
   },
   es: {
     page_title:   "¿Cuándo me toca renovar?",
@@ -519,6 +574,15 @@ const DICT = {
     days_label:      "{n} días",
     reminder_set:    "Te enviaremos un recordatorio a {contact} a partir del {start}.",
     no_reminder:     "Sin recordatorio activado.",
+    f_privacy_label: "He leído y acepto la política de privacidad *",
+    f_privacy_link:  "Leer política de privacidad",
+    f_marketing_label:"Acepto recibir comunicaciones de Serveis Mèdics Penedès",
+    f_marketing_desc: "Puedes revocar este consentimiento en cualquier momento",
+    err_privacy:     "Debes aceptar la política de privacidad para continuar",
+    err_submit:      "Error al enviar los datos. Inténtalo de nuevo.",
+    err_contact:     "Introduce un teléfono o correo válido",
+    lopd_notice:     "Tus datos serán tratados por Serveis Mèdics Penedès para gestionar tu solicitud de recordatorio, conforme al RGPD y la LOPDGDD. No los cedemos a terceros. Puedes ejercer tus derechos en info@smp.cat.",
+    btn_sending:     "Enviando…",
   },
   en: {
     page_title:   "When do I need to renew?",
@@ -568,6 +632,15 @@ const DICT = {
     days_label:      "{n} days",
     reminder_set:    "We'll send you a reminder to {contact} from {start}.",
     no_reminder:     "No reminder set.",
+    f_privacy_label: "I have read and accept the privacy policy *",
+    f_privacy_link:  "Read privacy policy",
+    f_marketing_label:"I agree to receive communications from Serveis Mèdics Penedès",
+    f_marketing_desc: "You can withdraw this consent at any time",
+    err_privacy:     "You must accept the privacy policy to continue",
+    err_submit:      "Error sending data. Please try again.",
+    err_contact:     "Please enter a valid phone or email",
+    lopd_notice:     "Your data will be processed by Serveis Mèdics Penedès to manage your reminder request, in accordance with GDPR. We do not share your data with third parties. You may exercise your rights at info@smp.cat.",
+    btn_sending:     "Sending…",
   },
   fr: {
     page_title:   "Quand dois-je renouveler?",
@@ -616,6 +689,15 @@ const DICT = {
     days_label:      "{n} jours",
     reminder_set:    "Nous vous enverrons un rappel à {contact} à partir du {start}.",
     no_reminder:     "Aucun rappel activé.",
+    f_privacy_label: "J'ai lu et j'accepte la politique de confidentialité *",
+    f_privacy_link:  "Lire la politique de confidentialité",
+    f_marketing_label:"J'accepte de recevoir des communications de Serveis Mèdics Penedès",
+    f_marketing_desc: "Vous pouvez révoquer ce consentement à tout moment",
+    err_privacy:     "Vous devez accepter la politique de confidentialité pour continuer",
+    err_submit:      "Erreur lors de l'envoi. Veuillez réessayer.",
+    err_contact:     "Veuillez entrer un téléphone ou e-mail valide",
+    lopd_notice:     "Vos données seront traitées par Serveis Mèdics Penedès pour gérer votre demande de rappel, conformément au RGPD. Nous ne les partageons pas avec des tiers. Vous pouvez exercer vos droits à info@smp.cat.",
+    btn_sending:     "Envoi en cours…",
   },
 };
 
@@ -677,7 +759,7 @@ function setStep(n) {
   });
   document.getElementById('screen-1').style.display      = n === 1 ? '' : 'none';
   document.getElementById('screen-2').style.display      = n === 2 ? '' : 'none';
-  document.getElementById('screen-result').style.display = n === 3 ? '' : 'none';
+  document.getElementById('screen-result').style.display = n === 3 ? 'block' : 'none';
 }
 
 function goStep1() { setStep(1); }
@@ -721,15 +803,17 @@ function switchContact(mode) {
 }
 
 /* ═══════════════════════════════════════
-   CHECKBOX
+   CHECKBOXES
 ═══════════════════════════════════════ */
-let reminderChecked = false;
+const checkboxState = { reminder: false, privacy: false, marketing: false };
 
-function toggleCheckbox() {
-  reminderChecked = !reminderChecked;
-  document.getElementById('checkbox-reminder').classList.toggle('checked', reminderChecked);
-  document.getElementById('checkbox-box').textContent = reminderChecked ? '✓' : '';
-  document.getElementById('accept-reminder').checked = reminderChecked;
+function toggleCheckbox(id) {
+  checkboxState[id] = !checkboxState[id];
+  const v = checkboxState[id];
+  document.getElementById(`checkbox-${id}`).classList.toggle('checked', v);
+  document.getElementById(`checkbox-box-${id}`).textContent = v ? '✓' : '';
+  document.getElementById(`accept-${id}`).checked = v;
+  if (id === 'privacy') document.getElementById('err-privacy').classList.remove('show');
 }
 
 /* ═══════════════════════════════════════
@@ -749,18 +833,28 @@ function daysDiff(from, to) {
 }
 
 /* ═══════════════════════════════════════
-   CALCULATE
+   CALCULATE + SUBMIT
 ═══════════════════════════════════════ */
-function calculate() {
+async function calculate() {
   const contactVal = contactMode === 'phone'
     ? document.getElementById('contact-phone').value.trim()
     : document.getElementById('contact-email').value.trim();
 
-  if (reminderChecked && !contactVal) {
-    document.getElementById('err-contact').classList.add('show');
-    return;
+  let ok = true;
+
+  if (checkboxState.reminder && !contactVal) {
+    document.getElementById('err-contact').classList.add('show'); ok = false;
+  } else {
+    document.getElementById('err-contact').classList.remove('show');
   }
-  document.getElementById('err-contact').classList.remove('show');
+
+  if (!checkboxState.privacy) {
+    document.getElementById('err-privacy').classList.add('show'); ok = false;
+  } else {
+    document.getElementById('err-privacy').classList.remove('show');
+  }
+
+  if (!ok) return;
 
   const permitKey  = document.getElementById('permit-type').value;
   const expiryDate = document.getElementById('expiry-date').value;
@@ -817,7 +911,7 @@ function calculate() {
 
   // Reminder confirmation
   const rc = document.getElementById('reminder-confirm');
-  if (reminderChecked && contactVal) {
+  if (checkboxState.reminder && contactVal) {
     rc.style.display = 'flex';
     document.getElementById('reminder-confirm-text').textContent =
       t('reminder_set').replace('{contact}', contactVal).replace('{start}', formatDate(startDate));
@@ -825,6 +919,41 @@ function calculate() {
     rc.style.display = 'none';
   }
 
+  // Submit to backend
+  const btn = document.getElementById('btn-calculate');
+  const submitErr = document.getElementById('submit-error');
+  btn.classList.add('btn-loading');
+  btn.querySelector('span').textContent = t('btn_sending');
+  submitErr.classList.remove('show');
+
+  try {
+    const payload = {
+      permit_type:   document.getElementById('permit-type').value,
+      expiry_date:   expiryDate,
+      age,
+      contact_mode:  contactMode,
+      contact_value: contactVal || '',
+      wants_reminder: checkboxState.reminder,
+      consent_marketing: checkboxState.marketing,
+      lang: currentLang,
+      calculated_start: startDate,
+      submitted_at: new Date().toISOString(),
+    };
+    const res = await fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+  } catch (e) {
+    submitErr.classList.add('show');
+    btn.classList.remove('btn-loading');
+    btn.querySelector('span').textContent = t('btn_calculate');
+    return;
+  }
+
+  btn.classList.remove('btn-loading');
+  btn.querySelector('span').textContent = t('btn_calculate');
   setStep(3);
 }
 
@@ -837,15 +966,20 @@ function reset() {
   document.getElementById('user-age').value    = '';
   document.getElementById('contact-phone').value = '';
   document.getElementById('contact-email').value = '';
-  reminderChecked = false;
-  document.getElementById('checkbox-reminder').classList.remove('checked');
-  document.getElementById('checkbox-box').textContent = '';
+  ['reminder','privacy','marketing'].forEach(id => {
+    checkboxState[id] = false;
+    document.getElementById(`checkbox-${id}`).classList.remove('checked');
+    document.getElementById(`checkbox-box-${id}`).textContent = '';
+    document.getElementById(`accept-${id}`).checked = false;
+  });
+  document.getElementById('err-privacy').classList.remove('show');
+  document.getElementById('submit-error').classList.remove('show');
   switchContact('phone');
   setStep(1);
 }
 
 function goToLanding() {
-  window.location.href = '../landingCarne/index.html';
+  window.location.href = 'https://landing-carne.vercel.app/';
 }
 
 /* ── INIT ── */
