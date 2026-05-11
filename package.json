@@ -2,7 +2,13 @@
   "name": "landing-renovacio",
   "version": "1.0.0",
   "scripts": {
-    "dev": "npx serve . -p 3001 --no-clipboard",
-    "start": "npx serve . -p 3001"
+    "dev": "node proxy.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node proxy.js"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
   }
 }
