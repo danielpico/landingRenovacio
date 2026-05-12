@@ -166,6 +166,7 @@ export default function LandingForm({ dict, lang }) {
       permitLabel,
       expiryFormatted: formatDate(expiryDate, lang),
       startFormatted:  formatDate(startDate, lang),
+      startPast:       daysToStart < 0,
       daysDisplay,
       reminderText,
     });
@@ -403,7 +404,7 @@ export default function LandingForm({ dict, lang }) {
                   </div>
                   <div className="result-detail-row">
                     <span className="r-label">{dict.rd_start}</span>
-                    <span className="r-value">{result.startFormatted}</span>
+                    <span className="r-value" style={result.startPast ? { color: 'var(--error-text)' } : undefined}>{result.startFormatted}</span>
                   </div>
                   <div className="result-detail-row">
                     <span className="r-label">{dict.rd_days_left}</span>
