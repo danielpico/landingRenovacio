@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PERMIT_KEYS, LEAD_DAYS, LEAD_DAYS_SENIOR } from '@/lib/permitConfig';
 
 const LANGS = ['ca', 'es', 'en', 'fr'];
-const LANDING_URL = process.env.NEXT_PUBLIC_LANDING_URL || 'https://landing-carne.vercel.app/';
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://landing-carne.vercel.app/';
 const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT || '/api/submit';
 
 const LOCALE_MAP = { ca: 'ca-ES', es: 'es-ES', en: 'en-GB', fr: 'fr-FR' };
@@ -423,7 +423,7 @@ export default function LandingForm({ dict, lang }) {
                     </svg>
                     <span>{dict.btn_new}</span>
                   </button>
-                  <button className="btn btn-primary" onClick={() => window.location.href = LANDING_URL}>
+                  <button className="btn btn-primary" onClick={() => window.location.href = BOOKING_URL}>
                     <span>{dict.btn_renew_now}</span>
                     <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
                       <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
