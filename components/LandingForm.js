@@ -107,7 +107,9 @@ export default function LandingForm({ dict, lang }) {
       state = 'urgent'; icon = '🚨'; titleKey = 'r_expired_title'; bodyKey = 'r_expired_body';
     } else if (daysLeft <= 15) {
       state = 'urgent'; icon = '🚨'; titleKey = 'r_urgent_title'; bodyKey = 'r_urgent_body';
-    } else if (daysToStart <= 0) {
+    } else if (daysToStart < 0) {
+      state = 'soon';   icon = '⚠️'; titleKey = 'r_soon_title';   bodyKey = 'r_soon_past_body';
+    } else if (daysToStart === 0) {
       state = 'soon';   icon = '⚠️'; titleKey = 'r_soon_title';   bodyKey = 'r_soon_body';
     } else if (daysLeft <= lead * 2) {
       state = 'planned'; icon = '📅'; titleKey = 'r_planned_title'; bodyKey = 'r_planned_body';
