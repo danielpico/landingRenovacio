@@ -6,7 +6,7 @@ import { PERMIT_KEYS, LEAD_DAYS, LEAD_DAYS_SENIOR } from '@/lib/permitConfig';
 
 const LANGS = ['ca', 'es', 'en', 'fr'];
 const LANDING_URL = 'https://landing-carne.vercel.app/';
-const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT || '';
+const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT || '/api/submit';
 
 const LOCALE_MAP = { ca: 'ca-ES', es: 'es-ES', en: 'en-GB', fr: 'fr-FR' };
 

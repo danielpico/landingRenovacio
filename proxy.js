@@ -1,25 +1,27 @@
-const { createServer } = require('http');
-const { parse } = require('url');
-const next = require('next');
+import { NextResponse } from 'next/server';
 
-const dev = process.env.NODE_ENV !== 'production';
-const hostname = process.env.HOSTNAME || 'localhost';
-const port = parseInt(process.env.PORT || '3000', 10);
+const LANGS = ['ca', 'es', 'en', 'fr'];
+const DEFAULT_LANG = 'ca';
 
-const app = next({ dev, hostname, port });
-const handle = app.getRequestHandler();
+export function proxy(request) {
+  const { pathname } = request.nextUrl;
 
-app.prepare().then(() => {
-  createServer(async (req, res) => {
-    try {
-      const parsedUrl = parse(req.url, true);
-      await handle(req, res, parsedUrl);
-    } catch (err) {
-      console.error('Error handling request:', err);
-      res.statusCode = 500;
-      res.end('Internal Server Error');
-    }
-  }).listen(port, hostname, () => {
-    console.log(`> Ready on http://${hostname}:${port}`);
-  });
-});
+  const hasLang = LANGS.some(
+    l => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
+  );
+  if (hasLang) return NextResponse.next();
+
+  const cookieLang = request.cookies.get('LOCALE')?.value;
+  const browserLang = request.headers.get('accept-language')?.slice(0, 2);
+
+  const lang =
+    LANGS.includes(cookieLang) ? cookieLang :
+    LANGS.includes(browserLang) ? browserLang :
+    DEFAULT_LANG;
+
+  return NextResponse.redirect(new URL(`/${lang}${pathname === '/' ? '' : pathname}`, request.url));
+}
+
+export const config = {
+  matcher: ['/((?!_next|api|.*\\..*).*)'],
+};

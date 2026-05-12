@@ -2,13 +2,17 @@
   "name": "landing-renovacio",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node proxy.js",
+    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node proxy.js"
+    "start": "next start"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
   },
   "dependencies": {
-    "next": "^14.2.0",
+    "next": "^16",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "resend": "^6.12.3"
   }
 }
