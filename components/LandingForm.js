@@ -121,11 +121,13 @@ export default function LandingForm({ dict, lang }) {
       ? { text: (dict.r_expired_title || 'Caducat').replace('!', ''), color: 'var(--error-text)' }
       : {
           text: dict.days_label.replace('{n}', daysLeft),
-          color: daysLeft < 30 ? 'var(--error-text)' : daysLeft < lead ? 'var(--orange-text)' : 'var(--success-text)',
+          color: daysLeft <= 15 ? 'var(--error-text)' : daysLeft < lead ? 'var(--orange-text)' : 'var(--success-text)',
         };
 
     const reminderText = (checks.reminder && contactVal)
-      ? dict.reminder_set.replace('{contact}', contactVal).replace('{start}', formatDate(startDate, lang))
+      ? daysToStart < 0
+        ? dict.reminder_set_now.replace('{contact}', contactVal)
+        : dict.reminder_set.replace('{contact}', contactVal).replace('{start}', formatDate(startDate, lang))
       : null;
 
     if (FORM_ENDPOINT) {
