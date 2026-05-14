@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { PERMIT_KEYS, LEAD_DAYS, LEAD_DAYS_SENIOR } from '@/lib/permitConfig';
 
 const LANGS = ['ca', 'es', 'en', 'fr'];
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://landing-carne.vercel.app/';
+const BOOKING_URL   = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://landing-carne.vercel.app/';
+const PRIVACY_URL   = 'https://smp.cat/privadesa/';
 const FORM_ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT || '/api/submit';
 
 const LOCALE_MAP = { ca: 'ca-ES', es: 'es-ES', en: 'en-GB', fr: 'fr-FR' };
@@ -148,6 +149,7 @@ export default function LandingForm({ dict, lang }) {
             lang,
             calculated_start:  startDate,
             submitted_at:      new Date().toISOString(),
+            landing_url:       window.location.origin + window.location.pathname,
           }),
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -341,7 +343,7 @@ export default function LandingForm({ dict, lang }) {
                     <div className="checkbox-label">
                       <span>{dict.f_privacy_label}</span>
                       <small>
-                        <a href="#" onClick={e => e.stopPropagation()} target="_blank" rel="noreferrer">
+                        <a href={PRIVACY_URL} onClick={e => e.stopPropagation()} target="_blank" rel="noreferrer">
                           {dict.f_privacy_link}
                         </a>
                       </small>
